@@ -2,8 +2,8 @@
 .option norvc
 
 # Initial entry point (machine mode)
-.type start, @function
-.global start
+.type _start, @function
+.global _start
 _start:
 	
   # Set global pointer

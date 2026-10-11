@@ -109,9 +109,9 @@ int printf(void (*putc)(char c), const char *fmt, ...) {
       case 'u': { /* Unsigned decimal integer */
         cur++;
 
-        u64_t val;
-        if (length == 8) val = va_arg(args, unsigned long long);
-        else val = va_arg(args, unsigned int);
+        u64_t val = (u64_t)va_arg(args, unsigned long long);
+        /*if (length == 8) val = va_arg(args, unsigned long long);
+        else val = va_arg(args, unsigned int);*/
 
         u64_t digits = 0;
         u64_t n = val;
@@ -138,9 +138,9 @@ int printf(void (*putc)(char c), const char *fmt, ...) {
       case 'i': /* Decimal integer */
       case 'd': {
 
-        i64_t val;
-        if (length == 8) val = va_arg(args, long long);
-        else val = va_arg(args, int);
+        i64_t val = (i64_t)va_arg(args, long long);
+        /*if (length == 8) val = va_arg(args, long long);
+        else val = va_arg(args, int);*/
 
         u64_t digits = 0;
         u64_t n = ABS(val);
@@ -210,9 +210,9 @@ int printf(void (*putc)(char c), const char *fmt, ...) {
       oct_out: {
         cur++;
 
-        u64_t val;
-        if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
-        else val = (u64_t)va_arg(args, unsigned int);
+        u64_t val = (u64_t)va_arg(args, unsigned long long);
+        /*if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
+        else val = (u64_t)va_arg(args, unsigned int);*/
 
         u64_t digits = 0;
         u64_t n = val;
@@ -254,9 +254,9 @@ int printf(void (*putc)(char c), const char *fmt, ...) {
       hex_out: {
         cur++;
 
-        u64_t val;
-        if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
-        else val = (u64_t)va_arg(args, unsigned int);
+        u64_t val = (u64_t)va_arg(args, unsigned long long);
+        /*if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
+        else val = (u64_t)va_arg(args, unsigned int);*/
 
         u64_t digits = 0;
         u64_t n = val;

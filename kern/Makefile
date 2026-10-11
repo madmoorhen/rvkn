@@ -8,7 +8,7 @@ CC=$(PREFIX)gcc
 LD=$(PREFIX)ld
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror -Wno-unused -std=c11 -I$(INC_DIR)
-CFLAGS += -Wno-format # My printf isn't cannon (extra octal O specifier)
+#CFLAGS += -Wno-format # My extra %O octal specifier isnt cannon
 CFLAGS += -mcmodel=medany -ffreestanding
 LDFLAGS = -T $(SRC_DIR)/linker.ld -nostdlib # -lgcc
 
