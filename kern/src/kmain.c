@@ -3,8 +3,8 @@
 #include <utils/printf.h>
 
 /* UART */
-volatile unsigned char *uart = (unsigned char *)0x10000000;
-void uart_putc(char c) { *uart = c; }
+static volatile unsigned char *uart = (unsigned char *)0x10000000;
+static void uart_putc(char c) { *uart = c; }
 
 /* From linker */
 extern u8_t __kern_start, __kern_end;
