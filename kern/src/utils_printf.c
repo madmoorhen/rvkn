@@ -11,7 +11,13 @@ static void putc_ignore(char c) { }
 int printf(void (*putc)(char c), const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  
+  int res = vprintf(putc, fmt, args);
+  va_end(args);
+  return res;
+}
+
+/* Print formatted output using given putc, given a va_list */
+int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
   /* Good for getting size of output, allocating buf, then actually printing */
   if (!putc) putc = putc_ignore;
 
@@ -306,6 +312,5 @@ int printf(void (*putc)(char c), const char *fmt, ...) {
         break;
     }
   }
-  va_end(args);
   return chars_out;
 }
