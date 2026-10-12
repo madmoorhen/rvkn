@@ -90,13 +90,15 @@ void log_devicetree(void *dtb) {
   bool parsing = true;
   while (parsing) {
     switch (ENDIAN32(*cur)) {
-      case FDT_BEGIN_NODE:
+      case FDT_BEGIN_NODE: {
         cur++;
         for (u64_t i = 0; i < level; i++) uart_putc('\t');
         level++;
         printf(uart_putc, "%s {\r\n", (char *)cur);
-        while ((*cur)&0xff) { cur++; }
-        break;
+        u64_t len = strlen((const char *)cur);
+        cur += len/4 + (len%4 ? 1 : 0);
+        while (!(*cur)) cur++; /* I'm not sure this is a good idea */
+      } break;
       case FDT_END_NODE:
         cur++;
         if (level > 0) level--;
@@ -107,7 +109,7 @@ void log_devicetree(void *dtb) {
       case FDT_PROP: {
         cur++;
         fdt_property_t *prop = (fdt_property_t *)cur;
-        cur += 2; // sizeof(fdt_property_t) in u32s, padded to nearest
+        cur += 2;
         char *name = (char *)dtb
             + ENDIAN32(fdt_header->off_dt_strings) + ENDIAN32(prop->nameoff);
         for (u64_t i = 0; i < level; i++) uart_putc('\t');
@@ -119,19 +121,22 @@ void log_devicetree(void *dtb) {
         printf(uart_putc, "\r\n");
       } break;
       case FDT_END:
-        //for (u64_t i = 0; i < level; i++) uart_putc('\t');
-        //printf(uart_putc, "FDT_END\r\n");
+        for (u64_t i = 0; i < level; i++) uart_putc('\t');
+        printf(uart_putc, "FDT_END\r\n");
         parsing = false;
         break;
       case FDT_NOP:
         cur++;
-        //for (u64_t i = 0; i < level; i++) uart_putc('\t');
-        //printf(uart_putc, "FDT_NOP\r\n");
+        for (u64_t i = 0; i < level; i++) uart_putc('\t');
+        printf(uart_putc, "FDT_NOP\r\n");
         break;
       default:
+        for (u64_t i = 0; i < level; i++) uart_putc('\t');
+        printf(
+            uart_putc, "\x1b[1;4;91mUNRECOGNISED TOKEN (%#08x)\x1b[0m\r\n",
+            *cur
+        );
         cur++;
-        //for (u64_t i = 0; i < level; i++) uart_putc('\t');
-        //printf(uart_putc, "Unrecognised token\r\n");
         break;
     }
   }

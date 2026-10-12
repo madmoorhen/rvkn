@@ -38,6 +38,9 @@ void kmain(u64_t mhartid, u64_t misa, void *dtb) {
 
   log_devicetree(dtb);
 
-	while(1) { uart_putc(*uart); }
+  volatile u16_t *poweroff = (u16_t *)0x100000;
+  *poweroff = ENDIAN16(0x5555);
+
+	//while(1) { uart_putc(*uart); }
   __builtin_unreachable();
 }
