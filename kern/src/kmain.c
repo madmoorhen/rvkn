@@ -1,16 +1,20 @@
 /* Includes */
 #include <utils/base.h>
 #include <utils/printf.h>
+#include <devicetree.h>
 
 /* UART */
 static volatile unsigned char *uart = (unsigned char *)0x10000000;
-static void uart_putc(char c) { *uart = c; }
+static void uart_putc(char c) { if (c) *uart = c; }
 
 /* From linker */
 extern u8_t __kern_start, __kern_end;
  
 /* Entry point */
 void kmain(u64_t mhartid, u64_t misa, void *dtb) {
+  /* No multiprocessor support - spin all other harts */
+  if (mhartid) { while (1); }
+
   u64_t stimecmp = 0;
   ASM( "csrr %0, stimecmp" : "=r"(stimecmp) );
 
@@ -31,6 +35,8 @@ void kmain(u64_t mhartid, u64_t misa, void *dtb) {
   printf(uart_putc, "dtb = %p\r\n", dtb);
   printf(uart_putc, "kernel start: %p\r\n", &__kern_start);
   printf(uart_putc, "kernel end: %p\r\n", &__kern_end);
+
+  log_devicetree(dtb);
 
 	while(1) { uart_putc(*uart); }
   __builtin_unreachable();

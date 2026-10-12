@@ -38,11 +38,11 @@ clean:
 build: $(BIN_DIR)/kernel.elf
 
 test: build
-	# add -smp n for n harts
 	qemu-system-riscv64 \
       -machine virt \
       -bios none \
       -serial mon:stdio \
       -nographic \
       -m 128M \
+      -smp 2 \
       -kernel $(BIN_DIR)/kernel.elf

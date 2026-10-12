@@ -51,21 +51,21 @@ CHECK_TYPE(f64_t, 8);
 
 /* This many brackets is as close as I'm getting to lisp */
 /* 16 bit endian switch */
-#define ENDIAN16(v) ((((u16_t)(v))<<8)|(((u16_t)v)>>8))
+#define ENDIAN16(v) ( ((((u16_t)(v))<<8)&0xff00) | ((((u16_t)(v))>>8)&0xff) )
 /* 32 bit endian switch */
-#define ENDIAN32(v) (((((u16_t)(v))<<24)&0xff000000)\
-    |((((u16_t)(v))<<8 )&0x00ff0000)\
-    |((((u16_t)(v))>>8 )&0x0000ff00)\
-    |((((u16_t)(v))>>24)&0x000000ff))
+#define ENDIAN32(v) (((((u32_t)(v))<<24)&0xff000000)\
+    |((((u32_t)(v))<<8 )&0x00ff0000)\
+    |((((u32_t)(v))>>8 )&0x0000ff00)\
+    |((((u32_t)(v))>>24)&0x000000ff))
 /* 64 bit endian switch */
-#define ENDIAN64(v) (((((u16_t)(v))<<56)&0xff00000000000000)\
-    |((((u16_t)(v))<<40)&0x00ff000000000000)\
-    |((((u16_t)(v))<<24)&0x0000ff0000000000)\
-    |((((u16_t)(v))<<8)& 0x000000ff00000000)\
-    |((((u16_t)(v))>>8)& 0x00000000ff000000)\
-    |((((u16_t)(v))>>24)&0x0000000000ff0000)\
-    |((((u16_t)(v))>>40)&0x000000000000ff00)\
-    |((((u16_t)(v))>>56)&0x00000000000000ff))
+#define ENDIAN64(v) (((((u64_t)(v))<<56)&0xff00000000000000)\
+    |((((u64_t)(v))<<40)&0x00ff000000000000)\
+    |((((u64_t)(v))<<24)&0x0000ff0000000000)\
+    |((((u64_t)(v))<<8)& 0x000000ff00000000)\
+    |((((u64_t)(v))>>8)& 0x00000000ff000000)\
+    |((((u64_t)(v))>>24)&0x0000000000ff0000)\
+    |((((u64_t)(v))>>40)&0x000000000000ff00)\
+    |((((u64_t)(v))>>56)&0x00000000000000ff))
 
 /* String length, not including NULL terminator */
 static u64_t strlen(const char *s) { u64_t l = 0; while (s[l]) l++; return l; }

@@ -79,7 +79,7 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
 
     /* Parse length */
     u64_t length = 4;
-    if (fmt[cur] == 'l') { cur++; if (fmt[cur] == 'l') { cur++; length = 8; } }
+    if (fmt[cur] == 'l') { length = 8; cur++; if (fmt[cur] == 'l') cur++; }
 
     /* Parse type */
     bool capital = false;
@@ -115,9 +115,9 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
       case 'u': { /* Unsigned decimal integer */
         cur++;
 
-        u64_t val = (u64_t)va_arg(args, unsigned long long);
-        /*if (length == 8) val = va_arg(args, unsigned long long);
-        else val = va_arg(args, unsigned int);*/
+        u64_t val = 0;
+        if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
+        else val = (u32_t)va_arg(args, unsigned int);
 
         u64_t digits = 0;
         u64_t n = val;
@@ -144,9 +144,9 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
       case 'i': /* Decimal integer */
       case 'd': {
 
-        i64_t val = (i64_t)va_arg(args, long long);
-        /*if (length == 8) val = va_arg(args, long long);
-        else val = va_arg(args, int);*/
+        i64_t val = 0;
+        if (length == 8) val = (i64_t)va_arg(args, long long);
+        else val = (i32_t)va_arg(args, int);
 
         u64_t digits = 0;
         u64_t n = ABS(val);
@@ -216,28 +216,25 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
       oct_out: {
         cur++;
 
-        u64_t val = (u64_t)va_arg(args, unsigned long long);
-        /*if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
-        else val = (u64_t)va_arg(args, unsigned int);*/
+        u64_t val = 0;
+        if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
+        else val = (u64_t)va_arg(args, unsigned int);
 
         u64_t digits = 0;
         u64_t n = val;
         while (n) { n >>= 3; digits++; }
         if (digits == 0) digits = 1;
 
-        u64_t len = digits;
-        if (base_prefix) len += 2;
-
-        if (right_align && len < width && !zero_pad) {
-          for (u64_t i = 0; i < width - len; i++) {
+        if (right_align && digits < width && !zero_pad) {
+          for (u64_t i = 0; i < width - digits; i++) {
             putc(' '); chars_out++;
           }
         }
         if (base_prefix) {
           putc('0'); putc(capital ? 'O' : 'o'); chars_out += 2;
         }
-        if (right_align && len < width && zero_pad) {
-          for (u64_t i = 0; i < width - len; i++) {
+        if (right_align && digits < width && zero_pad) {
+          for (u64_t i = 0; i < width - digits; i++) {
             putc('0'); chars_out++;
           }
         }
@@ -245,8 +242,8 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
           u8_t x = (val >> ((digits-i-1)*3)) & 0x7;
           putc('0'+x); chars_out++;
         }
-        if (!right_align && len < width) {
-          for (u64_t i = 0; i < width - len; i++) {
+        if (!right_align && digits < width) {
+          for (u64_t i = 0; i < width - digits; i++) {
             putc(zero_pad ? '0' : ' '); chars_out++;
           }
         }
@@ -260,28 +257,25 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
       hex_out: {
         cur++;
 
-        u64_t val = (u64_t)va_arg(args, unsigned long long);
-        /*if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
-        else val = (u64_t)va_arg(args, unsigned int);*/
+        u64_t val = 0;
+        if (length == 8) val = (u64_t)va_arg(args, unsigned long long);
+        else val = (u64_t)va_arg(args, unsigned int);
 
         u64_t digits = 0;
         u64_t n = val;
         while (n) { n >>= 4; digits++; }
         if (digits == 0) digits = 1;
 
-        u64_t len = digits;
-        if (base_prefix) len += 2;
-
-        if (right_align && len < width && !zero_pad) {
-          for (u64_t i = 0; i < width - len; i++) {
+        if (right_align && digits < width && !zero_pad) {
+          for (u64_t i = 0; i < width - digits; i++) {
             putc(' '); chars_out++;
           }
         }
         if (base_prefix) {
           putc('0'); putc(capital ? 'X' : 'x'); chars_out += 2;
         }
-        if (right_align && len < width && zero_pad) {
-          for (u64_t i = 0; i < width - len; i++) {
+        if (right_align && digits < width && zero_pad) {
+          for (u64_t i = 0; i < width - digits; i++) {
             putc('0'); chars_out++;
           }
         }
@@ -290,8 +284,8 @@ int vprintf(void (*putc)(char c), const char *fmt, va_list args) {
           if (x < 10) { putc('0'+x); chars_out++; }
           else { putc((capital ? 'A' : 'a')+x-10); chars_out++; }
         }
-        if (!right_align && len < width) {
-          for (u64_t i = 0; i < width - len; i++) {
+        if (!right_align && digits < width) {
+          for (u64_t i = 0; i < width - digits; i++) {
             putc(zero_pad ? '0' : ' '); chars_out++;
           }
         }
