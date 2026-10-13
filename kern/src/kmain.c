@@ -1,6 +1,6 @@
 /* Includes */
 #include <utils/base.h>
-#include <utils/printf.h>
+#include <utils/log.h>
 #include <devicetree.h>
 
 /* UART */
@@ -15,26 +15,33 @@ void kmain(u64_t mhartid, u64_t misa, void *dtb) {
   /* No multiprocessor support - spin all other harts */
   if (mhartid) { while (1); }
 
+  /* Set logging target */
+  log_target_set(LOG_TARGET_UART);
+
   u64_t stimecmp = 0;
   ASM( "csrr %0, stimecmp" : "=r"(stimecmp) );
 
   /* Test supervisor mode */
   u64_t sstatus = 0;
   ASM( "csrr %0, sstatus" : "=r"(sstatus) );
-  printf(uart_putc, "sstatus = %#0lx\r\n", sstatus);
-  printf(uart_putc, "Not in user mode - good\r\n");
+  log_msg(LOG_LEVEL_INFO, "sstatus = %#0lx", sstatus);
+  log_msg(LOG_LEVEL_INFO, "Not in user mode - good");
 
-  printf(
-      uart_putc, "rv%s%c with extensions: ",
+  log_msg(
+      LOG_LEVEL_INFO, "rv%s%c with extensions: ",
       ((misa>>30) & 0x3) == 1 ? "32" : "64",
       (misa & 0x10) ? 'e' : 'i'
   );
-  for (u64_t i = 0; i < 26; i++) if ((misa >> i)&1) uart_putc('A'+i);
-  printf(uart_putc, "\r\nmhartid = %lu\r\n", mhartid);
-  printf(uart_putc, "stimecmp = %lu\r\n", stimecmp);
-  printf(uart_putc, "dtb = %p\r\n", dtb);
-  printf(uart_putc, "kernel start: %p\r\n", &__kern_start);
-  printf(uart_putc, "kernel end: %p\r\n", &__kern_end);
+  char exts[27]; exts[26] = 0;
+  for (u64_t i = 0; i < 26; i++) exts[i] = '-';
+  for (u64_t i = 0; i < 26; i++) if ((misa >> i)&1) exts[i] = ('A'+i);
+  log_msg(LOG_LEVEL_INFO, "%s", exts);
+
+  log_msg(LOG_LEVEL_INFO, "nmhartid = %lu", mhartid);
+  log_msg(LOG_LEVEL_INFO, "stimecmp = %lu", stimecmp);
+  log_msg(LOG_LEVEL_INFO, "dtb = %p", dtb);
+  log_msg(LOG_LEVEL_INFO, "kernel start: %p", &__kern_start);
+  log_msg(LOG_LEVEL_INFO, "kernel end: %p", &__kern_end);
 
   log_devicetree(dtb);
 
