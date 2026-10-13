@@ -6,7 +6,7 @@
 #include <utils/base.h>
 
 /* Device tree node handle */
-typedef devicetree_node_handle_t
+typedef u64_t devicetree_node_handle_t;
 const devicetree_node_handle_t DEVICETREE_ROOT_NODE = 0;
 
 /* Device tree property */
@@ -35,7 +35,7 @@ extern devicetree_node_handle_t devicetree_node_get_node_name(
     devicetree_node_handle_t node, const char *name
 );
 /* Get a subnode from a node given its phandle */
-extern devicetree_node_handle_t devicetree_node_get_node_name(
+extern devicetree_node_handle_t devicetree_node_get_node_phandle(
     devicetree_node_handle_t node, u32_t phandle
 );
 /* Get the number of properties in a node */
